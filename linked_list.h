@@ -14,6 +14,11 @@ struct ListNode {
 
 typedef struct ListNode ListNode;
 
+typedef struct {
+	ListNode *sentinel;
+	int size;
+} LinkedList;
+
 ListNode *list_node_create(TreeNode *tree_node, int freq)
 {
 	ListNode *node = (ListNode*)malloc(sizeof(ListNode));
@@ -26,50 +31,72 @@ ListNode *list_node_create(TreeNode *tree_node, int freq)
 	return node;
 }
 
+LinkedList *linked_list_create(void)
+{
+	LinkedList *list = (LinkedList*)malloc(sizeof(LinkedList));
+	assert(list!=0);
+
+	list->sentinel = list_node_create(NULL, 0);
+	list->sentinel->next = list->sentinel;
+	list->sentinel->prev = list->sentinel;
+	list->size = 0;
+
+	return list;
+}
+
 void list_node_release(ListNode *node)
 {
 	free(node);
 }
 
-void list_add_sorted(ListNode **head, ListNode *node)
+void linked_list_add_sorted(LinkedList *list, ListNode *node)
 {
-	if (*head==NULL) {
-		*head = node;
-	} else {
-		ListNode *before_current = NULL;
-		ListNode *current = *head;
-		while (current!=NULL && current->freq<=node->freq) {
-			before_current = current;
-			current = current->next;
-		}
-
-		if (current==NULL) {
-			before_current->next = node;
-			node->prev = before_current;
-		} else	if (current==*head) { //before_current == NULL
-			node->next = *head;
-			(*head)->prev = node;
-		} else {
-			before_current->next = node;
-			node->prev = before_current;
-			current->prev = node;
-			node->next = current;
-		}
+	assert(list->sentinel!=NULL);
+	ListNode *current = list->sentinel->next;
+	while (current!=list->sentinel && current->freq<=node->freq) {
+		current = current->next;
 	}
+
+	ListNode *before_current = current->prev;
+	before_current->next = node;
+	node->prev = before_current;
+
+	node->next = current;
+	current->prev = node;
+
+	list->size += 1;
 }
 
-ListNode *list_pop_head(ListNode **head) {
-	assert(*head!=NULL);
+ListNode *linked_list_pop_head(LinkedList *list) {
+	assert(list->size != 0);
 
-	ListNode *old_head = *head;
-	*head = old_head->next;
+	ListNode *head = list->sentinel->next;
+	ListNode *after_head = head->next;
 
-	if (*head!=NULL) {
-		(*head)->prev = NULL;
+	list->sentinel->next = after_head;
+	after_head->prev = list->sentinel;
+
+	head->next = NULL;
+	head->prev = NULL;
+
+	list->size -= 1;
+	return head;
+}
+
+void linked_list_print(LinkedList *list)
+{
+	printf("{list} : ");
+	if (list->size==0) {
+		printf("[empty]");
+	} else {
+		ListNode *current = list->sentinel->next;
+		while (current!=list->sentinel) {
+			printf("[c: %c | f:%d] ", current->node->value, current->freq);
+			current = current->next;
+		}
 	}
 
-	old_head->next = NULL;
-	return old_head;
+	printf("\n");
 }
 
 #endif// __LIST_INCLUDED__
