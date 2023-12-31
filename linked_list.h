@@ -49,6 +49,19 @@ void list_node_release(ListNode *node)
 	free(node);
 }
 
+void linked_list_release(LinkedList *list)
+{
+	ListNode *current = list->sentinel->next;
+	while (current!=list->sentinel) {
+		ListNode *next = current->next;
+		list_node_release(current);
+		current = next;
+	}
+
+	list_node_release(list->sentinel);
+	free(list);
+}
+
 void linked_list_add_sorted(LinkedList *list, ListNode *node)
 {
 	assert(list->sentinel!=NULL);
