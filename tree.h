@@ -1,50 +1,40 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include "consts.h"
-
 #ifndef __TREE_INCLUDED__
 #define __TREE_INCLUDED__
 
-struct TreeNode {
-	struct TreeNode *left, *right;
-	char value;
+#include <stdlib.h>
+#include <assert.h>
+#include <stdbool.h>
+
+struct Node {
+	struct Node *left, *right;
+	int freq;
+	bool isLeaf;
+	char ch;
 };
 
-typedef struct TreeNode TreeNode;
+typedef struct Node Node;
 
-TreeNode *tree_node_create(void)
-{
-	TreeNode *node = (TreeNode*)malloc(sizeof(TreeNode));
+Node*
+create_node() {
+	Node *node = (Node*)malloc(sizeof(Node));
 	assert(node!=NULL);
 
 	node->left = NULL;
 	node->right = NULL;
-	node->value = 0;
+	node->freq = 0;
+	node->isLeaf = false;
+	node->ch = 0;
 
 	return node;
 }
 
-void tree_node_release(TreeNode *node)
-{
-	free(node);
-}
-
-void tree_release(TreeNode *root) {
+void
+destroy_tree(Node *root) {
 	if (root!=NULL) {
-		tree_release(root->left);
-		tree_release(root->right);
-		tree_node_release(root);
+		destroy_tree(root->left);
+		destroy_tree(root->right);
+		free(root);
 	}
-}
-
-int tree_node_count(TreeNode *root)
-{
-	if (root==NULL) {
-		return 0;
-	}
-
-	return 1 + tree_node_count(root->left) + tree_node_count(root->right);
 }
 
 #endif//__TREE_INCLUDED__
