@@ -8,7 +8,7 @@
 struct Node {
 	struct Node *left, *right;
 	int freq;
-	bool isLeaf;
+	bool isLeaf; //promeniti na is_leaf
 	char ch;
 };
 

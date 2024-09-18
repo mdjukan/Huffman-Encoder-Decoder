@@ -1,1 +1,0 @@
-Testing Huffman's algorithm implementation in C.
