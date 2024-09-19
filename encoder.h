@@ -3,12 +3,7 @@
 
 #include <stdio.h>
 #include "huffman_algo.h"
-#include "limits.h"
-
-//CONSTS HEADER 
-#define BUFFER_SIZE 1024 //1kb
-#define BYTES_BUFFER_SIZE (BUFFER_SIZE/CHAR_BIT)
-#define ASCII_LEN 128
+#include "consts.h"
 
 void
 clear_buffer(char buffer[BUFFER_SIZE]) {
@@ -19,9 +14,9 @@ clear_buffer(char buffer[BUFFER_SIZE]) {
 
 void
 write_buffer(FILE *out_file, char buffer[BUFFER_SIZE], int numchar) {
-	char bytes[BYTES_BUFFER_SIZE];
+	char bytes[BIT_BUFFER_SIZE];
 	int k = 0;
-	for (int i=0; i<BYTES_BUFFER_SIZE; i++) {
+	for (int i=0; i<BIT_BUFFER_SIZE; i++) {
 		bytes[i] = 0;
 		for (int j=CHAR_BIT-1; j>=0; j--) {
 			bytes[i] |= buffer[k++]<<j;
@@ -29,12 +24,12 @@ write_buffer(FILE *out_file, char buffer[BUFFER_SIZE], int numchar) {
 	}
 
 	fwrite(&numchar, sizeof(int), 1, out_file);
-	fwrite(bytes, sizeof(char), BYTES_BUFFER_SIZE, out_file);
+	fwrite(bytes, sizeof(char), BIT_BUFFER_SIZE, out_file);
 }
 
 void
 encode(char *in_file_name, char *out_file_name) {
-	FILE *in_file = fopen(in_file_name, "r");
+	FILE *in_file = fopen(in_file_name, "rb");
 	FILE *out_file = fopen(out_file_name, "wb");
 
 	int freqs[ASCII_LEN];
@@ -47,11 +42,20 @@ encode(char *in_file_name, char *out_file_name) {
 	int num_buffer = 0;
 
 	char buffer[BUFFER_SIZE];
+	clear_buffer(buffer);
+
 	int numchar = 0;
-	int k;
+	int k = 0;
 	char ch;
 
-	while ((ch = fgetc(in_file))!=EOF) {
+
+	while (1) {
+		size_t num_read = fread(&ch, sizeof(char), 1, in_file);
+		if (num_read==0) {
+			write_buffer(out_file, buffer, numchar);
+			break;
+		}
+
 		Code *code = codes[(int)ch];
 
 		if (BUFFER_SIZE-k<code->len) {

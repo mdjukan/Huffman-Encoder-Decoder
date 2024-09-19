@@ -3,15 +3,9 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <limits.h>
+#include "consts.h"
 #include "tree.h"
 #include "huffman_algo.h"
-
-#define BUFFER_SIZE 1024
-#define BITS_IN_BYTE 8
-#define BYTES_BUFFER_SIZE (BUFFER_SIZE/CHAR_BIT)
-#define ASCII_LEN 128
-#define BIT_BUFFER_SIZE (BUFFER_SIZE/CHAR_BIT)
 
 void
 expand(char buffer[BUFFER_SIZE], char bit_buffer[BIT_BUFFER_SIZE]) {
@@ -33,7 +27,7 @@ decode(const char *in_file_name, const char *out_file_name) {
 
 	Node *root = form_huffman_tree(freqs);
 
-	char bit_buffer[BUFFER_SIZE/BITS_IN_BYTE];
+	char bit_buffer[BIT_BUFFER_SIZE];
 	char buffer[BUFFER_SIZE];
 	int numchar;
 
@@ -49,7 +43,7 @@ decode(const char *in_file_name, const char *out_file_name) {
 		int k = 0;
 		for (int j=0; j<numchar; j++) {
 			Node *current = root;
-			while (!current->isLeaf) {
+			while (!current->is_leaf) {
 				if (buffer[k++]==0) {
 					current = current->left;
 				} else {
@@ -57,11 +51,12 @@ decode(const char *in_file_name, const char *out_file_name) {
 				}
 			}
 
-			fputc(current->ch, out_file);
-			//printf("%c", current->ch);
+			fwrite(&(current->ch), sizeof(char), 1, out_file);
+			//fputc(current->ch, out_file);
 		}
 	}
 
+	destroy_tree(root);
 	fclose(in_file);
 	fclose(out_file);
 }

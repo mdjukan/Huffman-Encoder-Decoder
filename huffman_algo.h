@@ -1,10 +1,10 @@
 #ifndef __HUFFMAN_ALGO_INCLUDED__
 #define __HUFFMAN_ALGO_INCLUDED__
 
-#include "tree.h"
 #include <stdlib.h>
 #include <stdio.h>
-#define ASCII_LEN 128
+#include "consts.h"
+#include "tree.h"
 
 void
 count_freqs(char *file_name, int freqs[ASCII_LEN]) {
@@ -53,7 +53,7 @@ create_nodes(int freqs[ASCII_LEN], Node *nodes[ASCII_LEN]) {
 		}
 
 		Node *node = create_node();
-		node->isLeaf = true;
+		node->is_leaf = true;
 		node->freq = freqs[i];
 		node->ch = (char)i;
 
@@ -85,7 +85,7 @@ form_huffman_tree(int freqs[ASCII_LEN]) {
 		new_node->left = left_node;
 		new_node->right = right_node;
 		new_node->freq = left_node->freq + right_node->freq;
-		new_node->isLeaf = false;
+		new_node->is_leaf = false;
 
 		add_node_sorted(nodes, new_node);
 		num_nodes -= 1;
@@ -118,7 +118,7 @@ create_code(char ch, char code[CODE_LEN], int len) {
 
 void
 write_codes(Node *root, Code *codes[ASCII_LEN], char code[CODE_LEN], int len) {
-	if (root->isLeaf) {
+	if (root->is_leaf) {
 		codes[(int)(root->ch)] = create_code(root->ch, code, len);
 	} else {
 		code[len] = 0;
