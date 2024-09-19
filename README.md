@@ -30,4 +30,4 @@ This project implements **Static Huffman's Algorithm** for file compression and 
 
 The algorithm was tested with a 5MB `.txt` file:
 - **Compression Success**: The original file was successfully encoded and decoded, with the output identical to the input.
-- **Compression Rate**: Achieved approximately **60% compression**.
+- **Compression Rate**: Achieved approximately **40% compression rate**.
