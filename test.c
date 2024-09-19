@@ -35,7 +35,7 @@ int main() {
 	encode("t8.txt", "t8.bin");
 	decode("t8.bin", "t8_decoded.txt");
 
-	double compression_rate = 100 * (double)file_size("t8.bin")/file_size("t8.txt");
+	double compression_rate = 100 * (1 - (double)file_size("t8.bin")/file_size("t8.txt"));
 
 	if (equal("t8.txt", "t8_decoded.txt")) {
 		printf("Original and decoded files are same!\n");
